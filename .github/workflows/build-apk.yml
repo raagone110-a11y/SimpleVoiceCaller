@@ -21,10 +21,13 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: ''   # don't install extra packages here
 
-      - name: Install SDK components
+      - name: Install required SDK packages
         run: |
-          sdkmanager --install "platforms;android-34" "build-tools;34.0.0" "cmdline-tools;latest"
+          yes | sdkmanager --licenses || true
+          sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -41,10 +44,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace --info
-
-      - name: List APK
-        run: find app/build/outputs -name "*.apk" || true
+        run: ./gradlew assembleDebug --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
